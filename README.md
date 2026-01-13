@@ -28,6 +28,15 @@ AI coding assistants are incredibly powerful, but they have a critical limitatio
 
 You end up repeating context, re-explaining decisions, and sometimes watching the AI make the same mistakes twice.
 
+### Why not just use CLAUDE.md?
+
+The typical solution is adding context to `.md` files. **It doesn't scale:**
+
+- Context window has limits — your instructions compete with actual code
+- Loads everything even when you only need part of it
+- No semantic search ("state management" won't find "Zustand")
+- Can't learn from failures or evolve automatically
+
 ## The Solution
 
 **code-recall** is an [MCP server](https://modelcontextprotocol.io) that gives AI agents persistent, semantic memory. It stores observations, decisions, and learnings in a local SQLite database with vector search capabilities, allowing your AI to:
