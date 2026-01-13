@@ -1,6 +1,6 @@
 {
   "name": "code-recall",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Ultra-fast MCP server for semantic memory and code analysis",
   "module": "src/index.ts",
   "type": "module",
