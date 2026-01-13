@@ -2,6 +2,9 @@
 
 # code-recall
 
+<img width="1536" height="1024" alt="portada" src="https://github.com/user-attachments/assets/04e1f95a-1239-42b1-bd23-c4bbe273452b" />
+
+
 **Semantic memory for AI coding agents**
 
 Give your AI assistant persistent memory that learns from your project's history.
