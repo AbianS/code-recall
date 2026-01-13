@@ -1,7 +1,5 @@
 <div align="center">
 
-# code-recall
-
 <img width="1536" height="1024" alt="portada" src="https://github.com/user-attachments/assets/04e1f95a-1239-42b1-bd23-c4bbe273452b" />
 
 
@@ -372,8 +370,4 @@ MIT License - see [LICENSE](LICENSE) for details.
 
 ---
 
-<div align="center">
-
-**Built for AI agents, by humans (with help from AI)**
-
-</div>
+<p align="center" style="text-align:center">with 💖 by <a href="https://github.com/AbianS" target="_blank">AbianS</a></p>
