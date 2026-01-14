@@ -1,0 +1,58 @@
+{
+  "name": "code-recall",
+  "version": "1.0.0",
+  "description": "Ultra-fast MCP server for semantic memory and code analysis",
+  "module": "src/index.ts",
+  "type": "module",
+  "bin": {
+    "code-recall": "src/index.ts"
+  },
+  "files": [
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AbianS/code-recall.git"
+  },
+  "keywords": [
+    "mcp",
+    "memory",
+    "ai",
+    "coding-agent",
+    "semantic-search",
+    "sqlite",
+    "bun"
+  ],
+  "author": "AbianS",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/AbianS/code-recall/issues"
+  },
+  "homepage": "https://github.com/AbianS/code-recall#readme",
+  "engines": {
+    "bun": ">=1.0.0"
+  },
+  "scripts": {
+    "start": "bun run src/index.ts",
+    "dev": "bun --watch run src/index.ts",
+    "build": "bun build src/index.ts --outdir dist --target bun",
+    "test": "bun test"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.25.2",
+    "@xenova/transformers": "2.17.2",
+    "sqlite-vec": "0.1.7-alpha.2",
+    "tree-sitter-javascript": "0.25.0",
+    "tree-sitter-typescript": "0.23.2",
+    "web-tree-sitter": "0.26.3",
+    "zod": "3.25.76"
+  },
+  "devDependencies": {
+    "@types/bun": "1.2.15"
+  },
+  "peerDependencies": {
+    "typescript": "5"
+  }
+}
