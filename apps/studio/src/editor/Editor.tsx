@@ -1,9 +1,20 @@
-import { Database } from "lucide-react";
 import { useEffect, useState } from "react";
+import { Sidebar } from "./components/sidebar";
+import { CognitiveLogs } from "./pages/cognitive-logs";
+import { MemoryGraph } from "./pages/memory-graph";
+import { Overview } from "./pages/overview";
+import { RulesEngine } from "./pages/rules-engine";
+
+export type TabId =
+  | "overview"
+  | "memory-graph"
+  | "rules-engine"
+  | "cognitive-logs";
 
 function Editor() {
   const [projectName, setProjectName] = useState<string>("");
   const [projectPath, setProjectPath] = useState<string>("");
+  const [activeTab, setActiveTab] = useState<TabId>("overview");
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -13,17 +24,33 @@ function Editor() {
     setProjectPath(path);
   }, []);
 
+  const renderContent = () => {
+    switch (activeTab) {
+      case "overview":
+        return <Overview />;
+      case "memory-graph":
+        return <MemoryGraph />;
+      case "rules-engine":
+        return <RulesEngine />;
+      case "cognitive-logs":
+        return <CognitiveLogs />;
+      default:
+        return <Overview />;
+    }
+  };
+
   return (
-    <div className="h-screen w-full flex flex-col items-center justify-center bg-background gap-4">
-      <div className="w-16 h-16 rounded-xl border bg-linear-to-br from-primary/20 to-teal-900/20 border-primary/20 text-primary flex items-center justify-center">
-        <Database className="w-8 h-8" />
-      </div>
-      <div className="text-center">
-        <h1 className="text-xl font-semibold text-foreground">{projectName}</h1>
-        <p className="text-xs text-muted-foreground/60 font-mono mt-1">
-          {projectPath}
-        </p>
-      </div>
+    <div className="h-screen w-full relative bg-surface overflow-hidden">
+      {/* Main content area */}
+      <main className="absolute inset-0">{renderContent()}</main>
+
+      {/* Floating sidebar */}
+      <Sidebar
+        projectName={projectName}
+        projectPath={projectPath}
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+      />
     </div>
   );
 }
