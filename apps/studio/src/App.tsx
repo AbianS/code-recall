@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import "./App.css";
 import {
   Footer,
@@ -6,58 +6,92 @@ import {
   ProjectList,
   SearchInput,
 } from "@/components/launcher";
-
-const mockProjects: Project[] = [
-  {
-    id: "1",
-    name: "personal-assistant-v2",
-    path: "~/dev/projects/ai-assistant",
-    vectorCount: 12405,
-    status: "active",
-  },
-  {
-    id: "2",
-    name: "trading-bot-alpha",
-    path: "~/work/fintech/bots/alpha",
-    vectorCount: 8902,
-    status: "idle",
-  },
-  {
-    id: "3",
-    name: "research-agent-01",
-    path: "~/uni/research/agent-data",
-    vectorCount: 0,
-    status: "sync",
-    syncProgress: 66,
-  },
-  {
-    id: "4",
-    name: "debug-logs-january",
-    path: "~/system/logs/january.db",
-    vectorCount: 450,
-    status: "archived",
-  },
-  {
-    id: "5",
-    name: "legacy-backup-2023",
-    path: "~/backups/legacy.db",
-    vectorCount: 42000,
-    status: "offline",
-  },
-];
+import {
+  addProject,
+  getDatabaseStats,
+  getProjects,
+  openDatabaseDialog,
+  type StoredProject,
+} from "@/lib/tauri";
 
 function App() {
+  const [projects, setProjects] = useState<Project[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedProjectId, setSelectedProjectId] = useState<string>("1");
+  const [selectedProjectId, setSelectedProjectId] = useState<
+    string | undefined
+  >();
+  const [isLoading, setIsLoading] = useState(true);
 
-  const filteredProjects = mockProjects.filter(
+  const loadProjects = useCallback(async () => {
+    try {
+      const storedProjects = await getProjects();
+
+      const projectsWithStats = await Promise.all(
+        storedProjects.map(async (stored: StoredProject): Promise<Project> => {
+          try {
+            const stats = await getDatabaseStats(stored.path);
+            return {
+              id: stored.id,
+              name: stored.name,
+              path: stored.path,
+              vectorCount: stats.memory_count,
+              status: "idle",
+            };
+          } catch {
+            return {
+              id: stored.id,
+              name: stored.name,
+              path: stored.path,
+              vectorCount: 0,
+              status: "idle",
+            };
+          }
+        }),
+      );
+
+      setProjects(projectsWithStats);
+
+      if (projectsWithStats.length > 0 && !selectedProjectId) {
+        setSelectedProjectId(projectsWithStats[0].id);
+      }
+    } catch (error) {
+      console.error("Failed to load projects:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [selectedProjectId]);
+
+  useEffect(() => {
+    loadProjects();
+  }, [loadProjects]);
+
+  const filteredProjects = projects.filter(
     (project) =>
       project.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       project.path.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
-  const handleOpenDatabase = () => {
-    console.log("Open database dialog");
+  const handleOpenDatabase = async () => {
+    try {
+      const path = await openDatabaseDialog();
+      if (path) {
+        const newProject = await addProject(path);
+        const stats = await getDatabaseStats(path);
+
+        const project: Project = {
+          id: newProject.id,
+          name: newProject.name,
+          path: newProject.path,
+          vectorCount: stats.memory_count,
+          status: "idle",
+        };
+
+        setProjects((prev) => [...prev, project]);
+        setSelectedProjectId(project.id);
+      }
+    } catch (error) {
+      console.error("Failed to add project:", error);
+    }
   };
 
   const handlePreferences = () => {
@@ -71,6 +105,14 @@ function App() {
   const handleSelectProject = (project: Project) => {
     setSelectedProjectId(project.id);
   };
+
+  if (isLoading) {
+    return (
+      <div className="h-screen w-full overflow-hidden flex flex-col bg-background items-center justify-center">
+        <p className="text-muted-foreground text-sm">Loading...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="h-screen w-full overflow-hidden flex flex-col bg-background">

@@ -8,7 +8,6 @@ export interface Project {
   path: string;
   vectorCount: number;
   status: ProjectStatus;
-  syncProgress?: number;
 }
 
 interface ProjectCardProps {
