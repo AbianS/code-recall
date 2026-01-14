@@ -2,8 +2,7 @@ name: Release
 
 on:
   push:
-    tags: [ v* ]
-
+    tags: [v*]
 
 jobs:
   publish:
@@ -21,9 +20,10 @@ jobs:
         run: bun install
 
       - name: Run tests
-        run: bun test
+        run: bun run test
 
-      - name: Publish to npm
+      - name: Publish server to npm
+        working-directory: apps/server
         run: bun publish --access public
         env:
           NPM_CONFIG_TOKEN: ${{ secrets.NPM_TOKEN }}
