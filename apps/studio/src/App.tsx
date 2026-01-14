@@ -21,6 +21,7 @@ import {
   getDatabaseStats,
   getProjects,
   openDatabaseDialog,
+  openEditorWindow,
   removeProject,
   type StoredProject,
 } from "@/lib/tauri";
@@ -136,8 +137,13 @@ function App() {
     console.log("Open documentation");
   };
 
-  const handleSelectProject = (project: Project) => {
+  const handleSelectProject = async (project: Project) => {
     setSelectedProjectId(project.id);
+    try {
+      await openEditorWindow(project.name, project.path);
+    } catch (error) {
+      console.error("Failed to open editor:", error);
+    }
   };
 
   if (isLoading) {

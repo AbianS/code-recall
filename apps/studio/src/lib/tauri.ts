@@ -29,3 +29,13 @@ export async function addProject(path: string): Promise<StoredProject> {
 export async function removeProject(id: string): Promise<void> {
   return invoke<void>("remove_project", { id });
 }
+
+export async function openEditorWindow(
+  projectName: string,
+  projectPath: string,
+): Promise<void> {
+  return invoke<void>("open_editor_window", {
+    projectName,
+    projectPath,
+  });
+}

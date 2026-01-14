@@ -13,6 +13,7 @@
     "macOSPrivateApi": true,
     "windows": [
       {
+        "label": "launcher",
         "title": "Code Recall Studio",
         "width": 640,
         "height": 520,

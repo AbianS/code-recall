@@ -1,6 +1,7 @@
 use crate::database;
 use crate::models::{DatabaseStats, StoredProject};
 use crate::store;
+use crate::window;
 use tauri::AppHandle;
 use tauri_plugin_dialog::DialogExt;
 
@@ -36,4 +37,13 @@ pub async fn add_project(app: AppHandle, path: String) -> Result<StoredProject, 
 #[tauri::command]
 pub async fn remove_project(app: AppHandle, id: String) -> Result<(), String> {
     store::remove_project(&app, &id)
+}
+
+#[tauri::command]
+pub fn open_editor_window(
+    app: AppHandle,
+    project_name: String,
+    project_path: String,
+) -> Result<(), String> {
+    window::open_editor(&app, &project_name, &project_path)
 }
