@@ -1,106 +1,86 @@
+# CLAUDE.md
 
-Default to using Bun instead of Node.js.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-- Use `bun <file>` instead of `node <file>` or `ts-node <file>`
-- Use `bun test` instead of `jest` or `vitest`
-- Use `bun build <file.html|file.ts|file.css>` instead of `webpack` or `esbuild`
-- Use `bun install` instead of `npm install` or `yarn install` or `pnpm install`
-- Use `bun run <script>` instead of `npm run <script>` or `yarn run <script>` or `pnpm run <script>`
-- Use `bunx <package> <command>` instead of `npx <package> <command>`
-- Bun automatically loads .env, so don't use dotenv.
+## Project Overview
 
-## APIs
+code-recall is an MCP (Model Context Protocol) server that provides semantic memory for AI coding agents. It stores observations, decisions, and learnings in a local SQLite database with vector search capabilities.
 
-- `Bun.serve()` supports WebSockets, HTTPS, and routes. Don't use `express`.
-- `bun:sqlite` for SQLite. Don't use `better-sqlite3`.
-- `Bun.redis` for Redis. Don't use `ioredis`.
-- `Bun.sql` for Postgres. Don't use `pg` or `postgres.js`.
-- `WebSocket` is built-in. Don't use `ws`.
-- Prefer `Bun.file` over `node:fs`'s readFile/writeFile
-- Bun.$`ls` instead of execa.
+## Commands
+
+```bash
+# Development
+bun run dev          # Watch mode with auto-reload
+bun run start        # Run server directly
+
+# Testing
+bun test             # Run all tests
+bun test tests/memory/search.test.ts  # Run specific test file
+
+# Linting
+bun run lint         # Check code with Biome
+bun run lint:fix     # Fix lint issues
+```
+
+## Architecture
+
+### Core Components
+
+```
+src/
+├── index.ts           # Entry point, starts MCP server via stdio
+├── server.ts          # MCP server setup, registers all 8 tools
+├── database/          # SQLite + sqlite-vec operations
+│   └── index.ts       # DatabaseManager - all DB operations
+├── memory/            # Semantic memory system
+│   ├── index.ts       # MemoryManager - high-level memory API
+│   ├── embeddings.ts  # Local embeddings via @xenova/transformers
+│   └── search.ts      # Hybrid search (vector + FTS + recency)
+├── rules/             # Guardrail rules engine
+│   └── index.ts       # RulesEngine - semantic rule matching
+└── code/              # Code analysis via tree-sitter
+    ├── index.ts       # analyzeFile() entry point
+    ├── parser.ts      # tree-sitter WASM loader
+    └── extractors/    # Language-specific entity extraction
+```
+
+### Data Flow
+
+1. **MCP Server** (`server.ts`) exposes 8 tools via stdio transport
+2. **MemoryManager** handles storing/searching memories with embeddings
+3. **DatabaseManager** persists to SQLite with sqlite-vec for vector search
+4. **RulesEngine** matches actions against rules using cosine similarity
+5. **CodeAnalyzer** extracts entities (classes, functions) via tree-sitter
+
+### Search Algorithm
+
+Hybrid search in `memory/search.ts` combines:
+- Vector similarity (50%) - cosine similarity via sqlite-vec
+- Full-text search (30%) - SQLite FTS5 BM25 ranking
+- Recency (15%) - exponential decay over 7 days
+- Failure boost (5%) - failed decisions rank 1.5x higher
+
+### Key Technical Details
+
+- **Embeddings**: all-MiniLM-L6-v2 model (384 dimensions) via @xenova/transformers
+- **macOS**: Requires Homebrew SQLite for extension support (`brew install sqlite`)
+- **Storage**: Data stored in `.code-recall/memory.db` in project root
+- **Transport**: MCP over stdio (not HTTP)
 
 ## Testing
 
-Use `bun test` to run tests.
+Tests use `bun:test` and are organized to mirror `src/` structure. The `tests/setup.ts` provides:
+- `createTestDb()` - creates temp database with auto-cleanup
+- Sample code fixtures (`SAMPLE_TS_CODE`, `SAMPLE_JS_CODE`, `SAMPLE_TSX_CODE`)
 
-```ts#index.test.ts
-import { test, expect } from "bun:test";
+## MCP Tools
 
-test("hello world", () => {
-  expect(1).toBe(1);
-});
-```
-
-## Frontend
-
-Use HTML imports with `Bun.serve()`. Don't use `vite`. HTML imports fully support React, CSS, Tailwind.
-
-Server:
-
-```ts#index.ts
-import index from "./index.html"
-
-Bun.serve({
-  routes: {
-    "/": index,
-    "/api/users/:id": {
-      GET: (req) => {
-        return new Response(JSON.stringify({ id: req.params.id }));
-      },
-    },
-  },
-  // optional websocket support
-  websocket: {
-    open: (ws) => {
-      ws.send("Hello, world!");
-    },
-    message: (ws, message) => {
-      ws.send(message);
-    },
-    close: (ws) => {
-      // handle close
-    }
-  },
-  development: {
-    hmr: true,
-    console: true,
-  }
-})
-```
-
-HTML files can import .tsx, .jsx or .js files directly and Bun's bundler will transpile & bundle automatically. `<link>` tags can point to stylesheets and Bun's CSS bundler will bundle.
-
-```html#index.html
-<html>
-  <body>
-    <h1>Hello, world!</h1>
-    <script type="module" src="./frontend.tsx"></script>
-  </body>
-</html>
-```
-
-With the following `frontend.tsx`:
-
-```tsx#frontend.tsx
-import React from "react";
-import { createRoot } from "react-dom/client";
-
-// import .css files directly and it works
-import './index.css';
-
-const root = createRoot(document.body);
-
-export default function Frontend() {
-  return <h1>Hello, world!</h1>;
-}
-
-root.render(<Frontend />);
-```
-
-Then, run index.ts
-
-```sh
-bun --hot ./index.ts
-```
-
-For more information, read the Bun API docs in `node_modules/bun-types/docs/**.mdx`.
+The server exposes 8 tools:
+1. `store_observation` - Store memories with conflict detection
+2. `search_memory` - Hybrid semantic search
+3. `get_briefing` - Session start summary with stats/warnings
+4. `set_rule` - Create guardrail rules
+5. `check_rules` - Check rules against actions
+6. `record_outcome` - Mark decisions as worked/failed
+7. `list_rules` - List active rules
+8. `analyze_structure` - Parse code files with tree-sitter
