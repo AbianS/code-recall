@@ -1,3 +1,4 @@
+import { getCurrentWindow } from "@tauri-apps/api/window";
 import {
   ArrowLeft,
   Brain,
@@ -30,8 +31,13 @@ export function Sidebar({
   activeTab,
   onTabChange,
 }: SidebarProps) {
+  const handleSwitchProject = async () => {
+    const window = getCurrentWindow();
+    await window.close();
+  };
+
   return (
-    <aside className="absolute top-6 left-6 bottom-6 w-64 flex flex-col bg-sidebar/90 backdrop-blur-xl border border-sidebar-border rounded-2xl shadow-2xl z-30">
+    <aside className="w-64 shrink-0 flex flex-col bg-sidebar/90 backdrop-blur-xl border border-sidebar-border rounded-2xl shadow-2xl">
       {/* Header */}
       <div className="p-5 pb-4 border-b border-sidebar-border">
         {/* Logo and app name */}
@@ -69,6 +75,7 @@ export function Sidebar({
         {/* Switch project button */}
         <button
           type="button"
+          onClick={handleSwitchProject}
           className="w-full group flex items-center gap-2 px-3 py-1.5 rounded-lg border border-sidebar-border bg-surface/50 hover:bg-sidebar-accent transition-all"
         >
           <ArrowLeft className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-transform duration-300 group-hover:-translate-x-1" />

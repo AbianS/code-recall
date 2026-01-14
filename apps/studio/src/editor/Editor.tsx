@@ -40,17 +40,16 @@ function Editor() {
   };
 
   return (
-    <div className="h-screen w-full relative bg-surface overflow-hidden">
-      {/* Main content area */}
-      <main className="absolute inset-0">{renderContent()}</main>
-
-      {/* Floating sidebar */}
-      <Sidebar
-        projectName={projectName}
-        projectPath={projectPath}
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
-      />
+    <div className="h-screen w-full p-6 bg-surface overflow-hidden">
+      <div className="h-full flex gap-6">
+        <Sidebar
+          projectName={projectName}
+          projectPath={projectPath}
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+        />
+        <main className="flex-1 overflow-hidden">{renderContent()}</main>
+      </div>
     </div>
   );
 }
