@@ -35,10 +35,12 @@
     "bun": ">=1.0.0"
   },
   "scripts": {
-    "start": "bun run src/index.ts",
-    "dev": "bun --watch run src/index.ts",
-    "build": "bun build src/index.ts --outdir dist --target bun",
-    "test": "bun test"
+    "start": "bun --bun run src/index.ts",
+    "dev": "bun --bun --watch run src/index.ts",
+    "build": "bun --bun build src/index.ts --outdir dist --target bun",
+    "test": "bun --bun test",
+    "lint": "biome check src tests",
+    "lint:fix": "biome check --write src tests"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "1.25.2",
