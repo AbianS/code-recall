@@ -10,11 +10,14 @@
     "frontendDist": "../dist"
   },
   "app": {
+    "macOSPrivateApi": true,
     "windows": [
       {
-        "title": "studio",
-        "width": 800,
-        "height": 600
+        "title": "Code Recall Studio",
+        "width": 640,
+        "height": 520,
+        "resizable": false,
+        "center": true
       }
     ],
     "security": {
