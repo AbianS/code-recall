@@ -2,7 +2,7 @@ import "./App.css";
 
 function App() {
   return (
-    <main className="container">
+    <main>
       <h1>Welcome to Tauri + React</h1>
     </main>
   );
