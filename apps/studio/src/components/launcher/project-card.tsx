@@ -1,4 +1,4 @@
-import { Database } from "lucide-react";
+import { Database, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { type ProjectStatus, StatusBadge } from "./status-badge";
 
@@ -14,6 +14,7 @@ interface ProjectCardProps {
   project: Project;
   isSelected?: boolean;
   onClick?: () => void;
+  onDelete?: () => void;
 }
 
 function formatVectorCount(count: number): string {
@@ -27,8 +28,14 @@ export function ProjectCard({
   project,
   isSelected,
   onClick,
+  onDelete,
 }: ProjectCardProps) {
   const isActive = project.status === "active";
+
+  const handleDelete = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onDelete?.();
+  };
 
   return (
     <button
@@ -42,7 +49,7 @@ export function ProjectCard({
           : "border-transparent hover:bg-white/3 hover:border-border",
       )}
     >
-      <div className="col-span-6 flex items-center gap-3 overflow-hidden">
+      <div className="col-span-5 flex items-center gap-3 overflow-hidden">
         <div
           className={cn(
             "w-9 h-9 rounded-lg border flex items-center justify-center shrink-0 shadow-sm transition-colors",
@@ -70,7 +77,7 @@ export function ProjectCard({
         </div>
       </div>
 
-      <div className="col-span-3 text-right">
+      <div className="col-span-2 text-right">
         <span
           className={cn(
             "text-xs font-mono",
@@ -86,6 +93,16 @@ export function ProjectCard({
 
       <div className="col-span-3 flex justify-end">
         <StatusBadge status={project.status} />
+      </div>
+
+      <div className="col-span-2 flex justify-end">
+        <button
+          type="button"
+          onClick={handleDelete}
+          className="p-1.5 rounded-md opacity-0 group-hover:opacity-100 hover:bg-destructive/10 hover:text-destructive transition-all"
+        >
+          <Trash2 className="w-4 h-4" />
+        </button>
       </div>
     </button>
   );

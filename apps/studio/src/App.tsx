@@ -7,10 +7,21 @@ import {
   SearchInput,
 } from "@/components/launcher";
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
   addProject,
   getDatabaseStats,
   getProjects,
   openDatabaseDialog,
+  removeProject,
   type StoredProject,
 } from "@/lib/tauri";
 
@@ -21,6 +32,7 @@ function App() {
     string | undefined
   >();
   const [isLoading, setIsLoading] = useState(true);
+  const [projectToDelete, setProjectToDelete] = useState<Project | null>(null);
 
   const loadProjects = useCallback(async () => {
     try {
@@ -94,6 +106,28 @@ function App() {
     }
   };
 
+  const handleDeleteProject = (project: Project) => {
+    setProjectToDelete(project);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!projectToDelete) return;
+
+    try {
+      await removeProject(projectToDelete.id);
+      setProjects((prev) => prev.filter((p) => p.id !== projectToDelete.id));
+
+      if (selectedProjectId === projectToDelete.id) {
+        const remaining = projects.filter((p) => p.id !== projectToDelete.id);
+        setSelectedProjectId(remaining[0]?.id);
+      }
+    } catch (error) {
+      console.error("Failed to delete project:", error);
+    } finally {
+      setProjectToDelete(null);
+    }
+  };
+
   const handlePreferences = () => {
     console.log("Open preferences");
   };
@@ -125,6 +159,7 @@ function App() {
           projects={filteredProjects}
           selectedId={selectedProjectId}
           onSelect={handleSelectProject}
+          onDelete={handleDeleteProject}
         />
 
         <Footer
@@ -133,6 +168,27 @@ function App() {
           onDocumentation={handleDocumentation}
         />
       </div>
+
+      <AlertDialog
+        open={projectToDelete !== null}
+        onOpenChange={(open) => !open && setProjectToDelete(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remove project?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will remove <strong>{projectToDelete?.name}</strong> from the
+              list. The database file will not be deleted.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmDelete}>
+              Remove
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
