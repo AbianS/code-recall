@@ -1,12 +1,12 @@
 <div align="center">
 
-<img width="1536" height="1024" alt="portada" src="https://github.com/user-attachments/assets/04e1f95a-1239-42b1-bd23-c4bbe273452b" />
-
+# code-recall
 
 **Semantic memory for AI coding agents**
 
 Give your AI assistant persistent memory that learns from your project's history.
 
+[![npm](https://img.shields.io/npm/v/code-recall)](https://www.npmjs.com/package/code-recall)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Bun](https://img.shields.io/badge/Bun-1.0+-black?logo=bun)](https://bun.sh)
 [![MCP](https://img.shields.io/badge/MCP-Compatible-green)](https://modelcontextprotocol.io)

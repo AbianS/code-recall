@@ -1,18 +1,46 @@
 {
   "name": "code-recall-tui",
   "version": "1.0.0",
-  "private": true,
+  "description": "Terminal UI for browsing code-recall memories, rules, and code entities",
   "type": "module",
-  "module": "src/index.ts",
+  "main": "dist/index.js",
   "bin": {
-    "code-recall-tui": "src/index.ts"
+    "code-recall-tui": "dist/index.js"
   },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "start": "bun run src/index.ts",
     "dev": "bun --watch run src/index.ts",
     "build": "bun build src/index.ts --outdir dist --target bun",
     "lint": "biome check src",
     "lint:fix": "biome check --write src"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AbianS/code-recall.git",
+    "directory": "apps/tui"
+  },
+  "keywords": [
+    "code-recall",
+    "tui",
+    "terminal",
+    "cli",
+    "memory",
+    "ai",
+    "mcp",
+    "sqlite",
+    "bun"
+  ],
+  "author": "AbianS",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/AbianS/code-recall/issues"
+  },
+  "homepage": "https://github.com/AbianS/code-recall/tree/main/apps/tui#readme",
+  "engines": {
+    "bun": ">=1.0.0"
   },
   "dependencies": {
     "@opentui/core": "0.1.75"
