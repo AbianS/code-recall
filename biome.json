@@ -5,6 +5,12 @@
     "clientKind": "git",
     "useIgnoreFile": true
   },
+  "css": {
+    "parser": {
+      "cssModules": false,
+      "tailwindDirectives": true
+    }
+  },
   "files": {
     "ignoreUnknown": false
   },
@@ -22,7 +28,8 @@
       "recommended": true,
       "style": {
         "useTemplate": "off",
-        "noNonNullAssertion": "off"
+        "noNonNullAssertion": "off",
+        "useImportType": "off"
       },
       "correctness": {
         "noUnusedPrivateClassMembers": "off"
