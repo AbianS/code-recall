@@ -1,6 +1,6 @@
 {
   "name": "code-recall-tui",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Terminal UI for browsing code-recall memories, rules, and code entities",
   "type": "module",
   "main": "dist/index.js",
