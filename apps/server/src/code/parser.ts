@@ -5,10 +5,7 @@
  */
 
 import { dirname, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
 import { Language, Parser, type Tree } from "web-tree-sitter";
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
 
 let parserInstance: Parser | null = null;
 let isInitializing = false;
@@ -17,23 +14,22 @@ let initPromise: Promise<void> | null = null;
 // Language cache
 const languageCache = new Map<string, Language>();
 
-// Paths to WASM files
+function resolveWasm(pkg: string, file: string): string {
+  const pkgJson = require.resolve(`${pkg}/package.json`);
+  return resolve(dirname(pkgJson), file);
+}
+
+// Paths to WASM files (resolved via require.resolve to handle npm hoisting)
 const WASM_PATHS = {
-  parser: resolve(
-    __dirname,
-    "../../node_modules/web-tree-sitter/web-tree-sitter.wasm",
+  parser: resolveWasm("web-tree-sitter", "web-tree-sitter.wasm"),
+  typescript: resolveWasm(
+    "tree-sitter-typescript",
+    "tree-sitter-typescript.wasm",
   ),
-  typescript: resolve(
-    __dirname,
-    "../../node_modules/tree-sitter-typescript/tree-sitter-typescript.wasm",
-  ),
-  tsx: resolve(
-    __dirname,
-    "../../node_modules/tree-sitter-typescript/tree-sitter-tsx.wasm",
-  ),
-  javascript: resolve(
-    __dirname,
-    "../../node_modules/tree-sitter-javascript/tree-sitter-javascript.wasm",
+  tsx: resolveWasm("tree-sitter-typescript", "tree-sitter-tsx.wasm"),
+  javascript: resolveWasm(
+    "tree-sitter-javascript",
+    "tree-sitter-javascript.wasm",
   ),
 };
 
