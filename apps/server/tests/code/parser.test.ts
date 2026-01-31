@@ -42,10 +42,15 @@ describe("Code Parser", () => {
       expect(detectLanguage("component.jsx")).toBe("javascript");
     });
 
+    test("detects Rust (.rs)", () => {
+      expect(detectLanguage("file.rs")).toBe("rust");
+      expect(detectLanguage("/path/to/lib.rs")).toBe("rust");
+      expect(detectLanguage("main.RS")).toBe("rust");
+    });
+
     test("returns null for unsupported extensions", () => {
       expect(detectLanguage("file.py")).toBeNull();
       expect(detectLanguage("file.go")).toBeNull();
-      expect(detectLanguage("file.rs")).toBeNull();
       expect(detectLanguage("file.java")).toBeNull();
       expect(detectLanguage("file.cpp")).toBeNull();
       expect(detectLanguage("file.html")).toBeNull();
@@ -81,6 +86,11 @@ describe("Code Parser", () => {
 
     test("loads JavaScript language", async () => {
       const lang = await loadLanguage("javascript");
+      expect(lang).toBeDefined();
+    });
+
+    test("loads Rust language", async () => {
+      const lang = await loadLanguage("rust");
       expect(lang).toBeDefined();
     });
 
@@ -211,6 +221,51 @@ import defaultExport from 'module';
         (c: { type: string }) => c.type === "import_statement",
       );
       expect(imports.length).toBe(3);
+    });
+
+    test("parses Rust code", async () => {
+      const source = `
+fn main() {
+    println!("Hello, world!");
+}
+
+struct Point {
+    x: i32,
+    y: i32,
+}
+`;
+      const tree = await parseCode(source, "rust");
+
+      expect(tree).toBeDefined();
+      expect(tree.rootNode).toBeDefined();
+      expect(tree.rootNode.type).toBe("source_file");
+    });
+
+    test("parses Rust structs and functions", async () => {
+      const source = `
+pub struct User {
+    name: String,
+    age: u32,
+}
+
+impl User {
+    pub fn new(name: String, age: u32) -> Self {
+        Self { name, age }
+    }
+}
+`;
+      const tree = await parseCode(source, "rust");
+
+      expect(
+        tree.rootNode.children.some(
+          (c: { type: string }) => c.type === "struct_item",
+        ),
+      ).toBe(true);
+      expect(
+        tree.rootNode.children.some(
+          (c: { type: string }) => c.type === "impl_item",
+        ),
+      ).toBe(true);
     });
   });
 

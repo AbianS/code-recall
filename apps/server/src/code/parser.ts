@@ -31,6 +31,7 @@ const WASM_PATHS = {
     "tree-sitter-javascript",
     "tree-sitter-javascript.wasm",
   ),
+  rust: resolveWasm("tree-sitter-rust", "tree-sitter-rust.wasm"),
 };
 
 /**
@@ -71,7 +72,7 @@ export async function getParser(): Promise<Parser> {
  * Load a language grammar.
  */
 export async function loadLanguage(
-  language: "typescript" | "tsx" | "javascript",
+  language: "typescript" | "tsx" | "javascript" | "rust",
 ): Promise<Language> {
   await initializeParser();
 
@@ -90,7 +91,7 @@ export async function loadLanguage(
  */
 export async function parseCode(
   source: string,
-  language: "typescript" | "tsx" | "javascript",
+  language: "typescript" | "tsx" | "javascript" | "rust",
 ): Promise<Tree> {
   const parser = await getParser();
   const lang = await loadLanguage(language);
@@ -108,7 +109,7 @@ export async function parseCode(
  */
 export function detectLanguage(
   filePath: string,
-): "typescript" | "tsx" | "javascript" | null {
+): "typescript" | "tsx" | "javascript" | "rust" | null {
   const ext = filePath.toLowerCase().split(".").pop();
 
   switch (ext) {
@@ -122,6 +123,8 @@ export function detectLanguage(
       return "javascript";
     case "jsx":
       return "javascript"; // JSX uses javascript grammar
+    case "rs":
+      return "rust";
     default:
       return null;
   }

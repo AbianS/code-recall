@@ -7,6 +7,7 @@
 
 import { createHash } from "node:crypto";
 import { extractJavaScriptEntities } from "./extractors/javascript.ts";
+import { extractRustEntities } from "./extractors/rust.ts";
 import { extractTypeScriptEntities } from "./extractors/typescript.ts";
 import { detectLanguage, parseCode } from "./parser.ts";
 import type { AnalysisResult, CodeEntity, EntityType } from "./types.ts";
@@ -42,6 +43,8 @@ export async function analyzeFile(
   let entities: CodeEntity[];
   if (language === "javascript") {
     entities = extractJavaScriptEntities(tree, source);
+  } else if (language === "rust") {
+    entities = extractRustEntities(tree, source);
   } else {
     // TypeScript and TSX use the TypeScript extractor
     entities = extractTypeScriptEntities(tree, source);
@@ -84,10 +87,16 @@ export function formatAnalysisResult(result: AnalysisResult): string {
 
   const typeOrder: EntityType[] = [
     "class",
+    "struct",
+    "enum",
+    "trait",
+    "impl",
     "interface",
     "type",
     "function",
     "method",
+    "mod",
+    "macro",
     "variable",
     "import",
   ];
