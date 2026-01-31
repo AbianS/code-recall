@@ -9,7 +9,13 @@ export type EntityType =
   | "interface"
   | "type"
   | "variable"
-  | "import";
+  | "import"
+  | "struct"
+  | "enum"
+  | "trait"
+  | "impl"
+  | "mod"
+  | "macro";
 
 export interface CodeEntity {
   type: EntityType;
@@ -24,7 +30,7 @@ export interface CodeEntity {
 export interface AnalysisResult {
   filePath: string;
   fileHash: string;
-  language: "typescript" | "javascript";
+  language: "typescript" | "javascript" | "rust";
   entities: CodeEntity[];
   analyzedAt: string;
 }
