@@ -12,9 +12,9 @@
     "release": "bun --bun turbo run build && changeset publish"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.3.11",
+    "@biomejs/biome": "2.3.13",
     "@changesets/cli": "2.29.8",
-    "turbo": "2.7.4",
+    "turbo": "2.8.1",
     "typescript": "5.9.3"
   },
   "engines": {
